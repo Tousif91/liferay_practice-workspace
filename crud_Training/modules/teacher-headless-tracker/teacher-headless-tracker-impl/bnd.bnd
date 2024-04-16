@@ -1,0 +1,3 @@
+Bundle-Name: teacher-headless-tracker-impl
+Bundle-SymbolicName: com.teacher.headless.tracker.impl
+Bundle-Version: 1.0.0

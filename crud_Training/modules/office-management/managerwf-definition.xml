@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow-definition xmlns="urn:liferay.com:liferay-workflow_7.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:liferay.com:liferay-workflow_7.0.0 http://www.liferay.com/dtd/liferay-workflow-definition_7_0_0.xsd">
+    <name>managerWF</name>
+    <version>1</version>
+    <state>
+        <name>created</name>
+        <metadata><![CDATA[{"xy":[100,50],"transitions":{"Content Editor":{"xy":[-42,0],"bendpoints":[]}}}]]></metadata>
+        <initial>true</initial>
+        <transitions>
+            <transition>
+                <name>Content Editor</name>
+                <target>Content Editor</target>
+            </transition>
+        </transitions>
+    </state>
+    <task>
+        <name>Content Editor</name>
+        <metadata><![CDATA[{"xy":[260,250],"transitions":{"content rejected":{"xy":[-27,8],"bendpoints":[]}}}]]></metadata>
+        <actions>
+            <action>
+                <name>newAction1</name>
+                <script><![CDATA[import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+
+WorkflowStatusManagerUtil.updateStatus(1, workflowContext);]]></script>
+                <script-language>groovy</script-language>
+                <execution-type>onEntry</execution-type>
+            </action>
+        </actions>
+        <assignments>
+            <roles>
+                <role>
+                    <role-type>regular</role-type>
+                    <name>content editor</name>
+                    <auto-create>true</auto-create>
+                </role>
+            </roles>
+        </assignments>
+        <transitions>
+            <transition>
+                <name>Content publisher</name>
+                <target>Content publisher</target>
+                <default>true</default>
+            </transition>
+            <transition>
+                <name>content rejected</name>
+                <target>content rejected</target>
+                <default>false</default>
+            </transition>
+        </transitions>
+    </task>
+    <state>
+        <name>approved</name>
+        <metadata><![CDATA[{"xy":[910,40],"terminal":true}]]></metadata>
+        <actions>
+            <action>
+                <name>approve</name>
+                <script><![CDATA[import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+
+WorkflowStatusManagerUtil.updateStatus(0, workflowContext);]]></script>
+                <script-language>groovy</script-language>
+                <execution-type>onEntry</execution-type>
+            </action>
+        </actions>
+    </state>
+    <task>
+        <name>Content publisher</name>
+        <metadata><![CDATA[{"xy":[700,270],"transitions":{"approved":{"xy":[-21,-35],"bendpoints":[]}}}]]></metadata>
+        <actions>
+            <action>
+                <name>newAction1</name>
+                <script><![CDATA[import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+
+WorkflowStatusManagerUtil.updateStatus(2, workflowContext);]]></script>
+                <script-language>groovy</script-language>
+                <execution-type>onEntry</execution-type>
+            </action>
+        </actions>
+        <assignments>
+            <roles>
+                <role>
+                    <role-type>regular</role-type>
+                    <name>content publisher</name>
+                    <auto-create>true</auto-create>
+                </role>
+            </roles>
+        </assignments>
+        <transitions>
+            <transition>
+                <name>Content Editor</name>
+                <target>Content Editor</target>
+                <default>false</default>
+            </transition>
+            <transition>
+                <name>approved</name>
+                <target>approved</target>
+                <default>true</default>
+            </transition>
+        </transitions>
+    </task>
+    <state>
+        <name>content rejected</name>
+        <metadata><![CDATA[{"xy":[211,450],"terminal":true}]]></metadata>
+        <actions>
+            <action>
+                <name>newAction1</name>
+                <script><![CDATA[import com.liferay.portal.kernel.workflow.WorkflowStatusManagerUtil;
+
+WorkflowStatusManagerUtil.updateStatus(4, workflowContext);]]></script>
+                <script-language>groovy</script-language>
+                <execution-type>onEntry</execution-type>
+            </action>
+        </actions>
+    </state>
+</workflow-definition>

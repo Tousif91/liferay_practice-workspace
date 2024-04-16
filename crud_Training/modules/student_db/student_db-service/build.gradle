@@ -1,0 +1,14 @@
+dependencies {
+	compile project(":modules:student_db:student_db-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+	
+	compileOnly group: 'com.liferay', name: 'com.liferay.portal.dao.orm.custom.sql', version: '1.0.0'
+
+}
+
+buildService {
+	apiDir = "../student_db-api/src/main/java"
+}
+
+group = "com.student.db"

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.student.db.model.Employee">
+		<field name="uuid" type="String" />
+		<field name="empId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="modifiedDate" type="Date" />
+		<field name="name" type="String" />
+		<field name="dob" type="Date" />
+		<field name="gender" type="String" />
+		<field name="email" type="String" />
+		<field name="address" type="String" />
+	</model>
+	<model name="com.student.db.model.Student">
+		<field name="uuid" type="String" />
+		<field name="studentId" type="long" />
+		<field name="name" type="String" />
+		<field name="dob" type="Date" />
+		<field name="gender" type="String" />
+	</model>
+	<model name="com.student.db.model.Teacher">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="name" type="String" />
+		<field name="address" type="String" />
+	</model>
+</model-hints>

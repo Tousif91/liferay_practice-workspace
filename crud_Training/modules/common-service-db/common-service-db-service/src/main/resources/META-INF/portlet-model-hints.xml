@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.common.db.model.News">
+		<field name="uuid" type="String" />
+		<field name="id" type="long" />
+		<field name="userId" type="long" />
+		<field name="title" type="String" />
+		<field name="subTitle" type="String" />
+		<field name="description" type="String" />
+		<field name="status" type="int" />
+	</model>
+</model-hints>

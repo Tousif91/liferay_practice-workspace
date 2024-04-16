@@ -1,0 +1,10 @@
+Bundle-Name: student_db-api
+Bundle-SymbolicName: com.student.db.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.student.db.exception,\
+	com.student.db.model,\
+	com.student.db.service,\
+	com.student.db.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../student_db-service/service.xml

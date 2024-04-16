@@ -1,0 +1,136 @@
+info:
+    description: "TeacherHeadlessTracker REST API"
+    license:
+        name: "Apache 2.0"
+        url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+    title: "TeacherHeadlessTracker"
+    version: v1.0
+openapi: 3.0.1
+components:
+    schemas:
+      TeacherEntry:
+        description: 
+          Represent teacher apis.
+        properties:
+          id:
+            type: integer
+            format: int64
+          name:
+            type: string
+          address:
+            type: string
+          message:
+            type: object
+            readOnly: true
+          data:
+            type: object
+        type: object
+paths:
+  "/get-teacher":
+    get:
+      operationId: getTeacher
+      tags: ["TeacherEntry"]
+      description: get teacher
+      summary: "get teacher"
+      responses:
+        '200':
+          description: Teacher listed successfully
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+            application/xml:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+        '403':
+          description: No teacher were found
+        '404':
+          description: API not found
+  "/add-teacher":
+    post:
+      operationId: addTeacher
+      tags: ["TeacherEntry"]
+      description: add teacher
+      summary: "add teacher"
+      requestBody:
+        description: add teacher
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/TeacherEntry"
+          application/xml:
+            schema:
+                $ref: "#/components/schemas/TeacherEntry"
+      responses:
+        '200':
+          description: Teacher added successfully
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+            application/xml:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+        '403':
+          description: No teacher were found
+        '404':
+          description: API not found
+  "/update-teacher":
+    put: 
+      operationId: updateTeacher
+      tags: ["TeacherEntry"]
+      description: update teacher
+      summary: "update teacher"
+      requestBody:
+        description: update teacher
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/TeacherEntry"
+          application/xml:
+            schema:
+                $ref: "#/components/schemas/TeacherEntry"
+      responses:
+        '200':
+          description: Teacher updated successfully
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+            application/xml:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+        '403':
+          description: No teacher were found
+        '404':
+          description: API not found
+
+  "/delete-teacher":
+    delete:
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      operationId: deleteTeacher
+      tags: ["TeacherEntry"]
+      description: delete teacher
+      summary: "delete teacher"
+      responses:
+        '200':
+          description: Teacher deleted successfully
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+            application/xml:
+              schema:
+                  $ref: "#/components/schemas/TeacherEntry"
+        '403':
+          description: No teacher were found
+        '404':
+          description: API not found

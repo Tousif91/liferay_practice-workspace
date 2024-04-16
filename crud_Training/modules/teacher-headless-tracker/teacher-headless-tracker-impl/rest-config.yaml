@@ -1,0 +1,9 @@
+apiDir: "../teacher-headless-tracker-api/src/main/java"
+apiPackagePath: "com.teacher.headless.tracker"
+application:
+    baseURI: "/teacher-headless-tracker"
+    className: "TeacherHeadlessTrackerApplication"
+    name: "TeacherHeadlessTracker"
+author: "developer"
+#clientDir: "../teacher-headless-tracker-client/src/main/java"
+#testDir: "../teacher-headless-tracker-test/src/testIntegration/java"

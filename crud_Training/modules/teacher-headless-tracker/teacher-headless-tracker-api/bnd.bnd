@@ -1,0 +1,6 @@
+Bundle-Name: teacher-headless-tracker-api
+Bundle-SymbolicName: com.teacher.headless.tracker.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.teacher.headless.tracker.dto.v1_0,\
+	com.teacher.headless.tracker.resource.v1_0

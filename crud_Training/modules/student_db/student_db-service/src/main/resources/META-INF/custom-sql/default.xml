@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<custom-sql>
+	<sql id="getResultByGender">
+		<![CDATA[
+		Select * from tr_employee e where e.gender = ? 
+		
+		]]>
+	</sql>
+</custom-sql>

@@ -1,0 +1,11 @@
+dependencies {
+	compile project(":modules:common-service-db:common-service-db-api")
+
+	compileOnly group: "com.liferay.portal", name: "release.portal.api"
+}
+
+buildService {
+	apiDir = "../common-service-db-api/src/main/java"
+}
+
+group = "com.common.db"

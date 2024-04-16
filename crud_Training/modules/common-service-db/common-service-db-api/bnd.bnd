@@ -1,0 +1,10 @@
+Bundle-Name: common-service-db-api
+Bundle-SymbolicName: com.common.db.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.common.db.exception,\
+	com.common.db.model,\
+	com.common.db.service,\
+	com.common.db.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../common-service-db-service/service.xml
