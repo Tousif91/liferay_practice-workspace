@@ -6,8 +6,6 @@
 	PortletURL iteratorURL = renderResponse.createRenderURL();
 	iteratorURL.setParameter("mvcPath", "/newsNotification.jsp");
 	
-	
-	
 %>
 
 <liferay-ui:search-container delta="5" emptyResultsMessage="No News Available" total="<%=newsList.size()%>" iteratorURL="<%=iteratorURL %>">

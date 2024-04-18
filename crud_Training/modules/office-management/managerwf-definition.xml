@@ -15,7 +15,7 @@
     </state>
     <task>
         <name>Content Editor</name>
-        <metadata><![CDATA[{"xy":[260,250],"transitions":{"content rejected":{"xy":[-27,8],"bendpoints":[]}}}]]></metadata>
+        <metadata><![CDATA[{"xy":[260,250],"transitions":{"content rejected":{"xy":[-125,58],"bendpoints":[[328,418]]}}}]]></metadata>
         <actions>
             <action>
                 <name>newAction1</name>
@@ -64,7 +64,7 @@ WorkflowStatusManagerUtil.updateStatus(0, workflowContext);]]></script>
     </state>
     <task>
         <name>Content publisher</name>
-        <metadata><![CDATA[{"xy":[700,270],"transitions":{"approved":{"xy":[-21,-35],"bendpoints":[]}}}]]></metadata>
+        <metadata><![CDATA[{"xy":[878,240],"transitions":{"approved":{"xy":[168,-72],"bendpoints":[[612,154]]}}}]]></metadata>
         <actions>
             <action>
                 <name>newAction1</name>
@@ -99,7 +99,7 @@ WorkflowStatusManagerUtil.updateStatus(2, workflowContext);]]></script>
     </task>
     <state>
         <name>content rejected</name>
-        <metadata><![CDATA[{"xy":[211,450],"terminal":true}]]></metadata>
+        <metadata><![CDATA[{"xy":[260,500],"terminal":true}]]></metadata>
         <actions>
             <action>
                 <name>newAction1</name>

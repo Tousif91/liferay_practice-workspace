@@ -1,33 +1,47 @@
 package com.office.management.portlet;
 
 import com.office.management.constants.OfficeManagementPortletKeys;
+import com.officeManagement.handler.WorkflowEmailNotification;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.common.db.model.News;
 import com.common.db.service.NewsLocalService;
 import com.common.db.service.NewsLocalServiceUtil;
 import com.liferay.asset.kernel.model.AssetEntry;
 import com.liferay.asset.kernel.service.AssetEntryLocalServiceUtil;
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Role;
+import com.liferay.portal.kernel.model.WorkflowInstanceLink;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.search.Indexer;
 import com.liferay.portal.kernel.search.IndexerRegistryUtil;
 import com.liferay.portal.kernel.service.RoleLocalServiceUtil;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.service.WorkflowInstanceLinkLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ContentTypes;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.kernel.workflow.WorkflowException;
 import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
+import com.liferay.portal.kernel.workflow.WorkflowInstance;
+import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
+import com.liferay.portal.kernel.workflow.WorkflowLog;
+import com.liferay.portal.kernel.workflow.WorkflowLogManagerUtil;
+import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
+import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUtil;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -81,6 +95,7 @@ public class OfficeManagementPortlet extends MVCPortlet {
 				
 				if(isContentEditor) {
 					newsList = NewsLocalServiceUtil.findByStatus(1);
+					//WorkflowEmailNotification.sendWFEmailNotification(themeDisplay.getUser().getEmailAddress(), "Hello World", News.class.getName(), renderRequest);
 				
 				}else if(isContentPublisher) {
 					newsList = NewsLocalServiceUtil.findByStatus(2);
@@ -166,5 +181,71 @@ public class OfficeManagementPortlet extends MVCPortlet {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void updateNewsWF(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException, PortletException {
+		System.out.println("update News WF");
+		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
+		long companyId = themeDisplay.getCompanyId();
+		long groupId = themeDisplay.getScopeGroupId();
+		long userId = themeDisplay.getUserId();
+		String redirect = ParamUtil.getString(actionRequest, "redirect");
+		String comment = ParamUtil.getString(actionRequest, "comment");
+		long newsId = ParamUtil.getLong(actionRequest, "newsId");
+		String transitionName = ParamUtil.getString(actionRequest, "transitionName");
+		WorkflowInstanceLink wil = null;
+		try {
+			wil = WorkflowInstanceLinkLocalServiceUtil.getWorkflowInstanceLink(companyId, groupId, News.class.getName(), newsId);
+		} catch (PortalException e1) {
+			e1.printStackTrace();
+		}
+		if(Validator.isNotNull(wil)) {
+			WorkflowInstance workflowInstance;
+			try {
+				workflowInstance =  WorkflowInstanceManagerUtil.getWorkflowInstance(companyId, wil.getWorkflowInstanceId());
+				Map<String, Serializable> workflowContext = (workflowInstance).getWorkflowContext();
+
+				List<Integer> logTypes_assign = new ArrayList<Integer>();
+				logTypes_assign.add(WorkflowLog.TASK_ASSIGN);
+				List<WorkflowLog> workflowLogs_assign = WorkflowLogManagerUtil.getWorkflowLogsByWorkflowInstance(companyId, wil.getWorkflowInstanceId(), logTypes_assign, QueryUtil.ALL_POS, QueryUtil.ALL_POS, WorkflowComparatorFactoryUtil.getLogCreateDateComparator(true));
+				
+				if(workflowLogs_assign.size() > 0){    
+					long workflowTaskId = workflowLogs_assign.get(workflowLogs_assign.size()-1).getWorkflowTaskId();
+					if(transitionName.equalsIgnoreCase("assignToMe")) {
+						if(workflowLogs_assign.get(workflowLogs_assign.size()-1).getUserId() <= 0) {
+							try {
+								WorkflowTaskManagerUtil.assignWorkflowTaskToUser(companyId, userId, workflowTaskId, themeDisplay.getUserId(), comment, new Date(), workflowContext);
+							} catch (PortalException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					} else {
+						try {
+							WorkflowTaskManagerUtil.completeWorkflowTask(companyId, userId, workflowTaskId, transitionName, comment, workflowContext);
+						} catch (PortalException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+				
+				News news = NewsLocalServiceUtil.getNews(newsId);
+				String subject = "Liferay Workflow of " + news.getTitle() +".";
+				String body = "You have Workflow Task :" +news.getTitle()+". You need to approve or reject the task.";
+				if(news.getStatus() == 1) {
+					WorkflowEmailNotification.sendWFEmailNotification(themeDisplay.getUser().getEmailAddress(), subject, body, actionRequest);
+				}else if(news.getStatus() == 2) {
+					WorkflowEmailNotification.sendWFEmailNotification(themeDisplay.getUser().getEmailAddress(), subject, body, actionRequest);
+				}
+				
+			} catch (WorkflowException e1) {
+				e1.printStackTrace();
+			} catch (PortalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		actionResponse.sendRedirect(redirect);
 	}
 }

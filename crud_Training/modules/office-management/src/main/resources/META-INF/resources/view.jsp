@@ -10,8 +10,14 @@
 	<portlet:param name="mvcPath" value="/newsNotification.jsp"/>
 </portlet:renderURL>
 
-<div style="float: right;">
-	<aui:button href="<%=notificationURL %>" value="Notification"/>
+<%
+	List<News> newsList = (List<News>) renderRequest.getAttribute("newsList");	
+%>
+<div style="float: right;">  
+	<%-- <aui:button href="<%=notificationURL %>" value="Notification"/>--%>
+	<a href="<%=notificationURL %>" class="btn btn-primary">
+		Notifications <span class="badge badge-danger"><%= newsList.size() %></span>
+	</a>
 </div>
 <br>
 
