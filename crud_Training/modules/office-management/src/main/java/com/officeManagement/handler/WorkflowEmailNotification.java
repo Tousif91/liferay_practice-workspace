@@ -21,11 +21,11 @@ public class WorkflowEmailNotification {
 
 	private static final Log _log = LogFactoryUtil.getLog(WorkflowEmailNotification.class);
 
-	public static void sendWFEmailNotification(String emailId, String subject, String body,
-			ActionRequest actionRequest) {
+	public static void sendWFEmailNotification(String emailId, String subject, String body, ActionRequest actionRequest) {
 
-		_log.info("Entered into WF Email Notication method ::: ");
-
+		//_log.info("Entered into WF Email Notication method ::: ");
+		
+		;
 		String from = "mail.session.mail.smtp.user";
 		//String to = "contenteditor@yopmail.com";
 		PortletPreferences preferences = actionRequest.getPreferences();
@@ -42,13 +42,13 @@ public class WorkflowEmailNotification {
 			mailMessage.setHTMLFormat(true);
 			MailServiceUtil.sendEmail(mailMessage);
 
-			_log.info("Send mail with HTML Format : " + emailId);
+			//_log.info("Send mail with HTML Format : " + emailId);
 
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
 			// e.printStackTrace();
-			_log.error("Error in email address: " + emailId);
-			_log.error(e.getMessage());
+			//_log.error("Error in email address: " + emailId);
+			//_log.error(e.getMessage());
 		}
 	}
 

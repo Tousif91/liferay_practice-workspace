@@ -3,8 +3,11 @@ package com.officeManagement.handler;
 import com.common.db.model.News;
 import com.common.db.service.NewsLocalServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.BaseWorkflowHandler;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowHandler;
@@ -14,9 +17,12 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.portlet.ActionRequest;
 import javax.portlet.Portlet;
 
 import org.osgi.service.component.annotations.Component;
+
+import aQute.bnd.annotation.component.Reference;
 
 @Component(
 		property = {
@@ -47,11 +53,17 @@ public class NewsWorkFlowHandler extends BaseWorkflowHandler<News>{
 		// TODO Auto-generated method stub
 		long id = GetterUtil.getLong((String)workflowContext.get(WorkflowConstants.CONTEXT_ENTRY_CLASS_PK));
 		News flowObject = NewsLocalServiceUtil.updateNews(id, status);
-		return null;
+		
+		//log.info("News Title : "+flowObject.getTitle());
+		//log.info("News Status : " + flowObject.getStatus());
+		//log.info("News ID : " + id);
+		
+		
+		return flowObject;
 	}
-
+	
+	
+	private static final Log log = LogFactoryUtil.getLog(NewsWorkFlowHandler.class);
 	
 
-	
-	
 }

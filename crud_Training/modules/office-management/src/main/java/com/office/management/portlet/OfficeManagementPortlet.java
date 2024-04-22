@@ -40,6 +40,7 @@ import com.liferay.portal.kernel.workflow.WorkflowInstance;
 import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowLog;
 import com.liferay.portal.kernel.workflow.WorkflowLogManagerUtil;
+import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
 import com.liferay.portal.kernel.workflow.comparator.WorkflowComparatorFactoryUtil;
 
@@ -121,9 +122,10 @@ public class OfficeManagementPortlet extends MVCPortlet {
 		String subTitle = ParamUtil.getString(actionRequest, "subTitle");
 		String description = ParamUtil.getString(actionRequest, "description");	
 		
-		_log.info("New Title : " + title);
-		_log.info("New Sub Title : " + subTitle);
-		_log.info("New description : " + description);
+		/*
+		 * _log.info("New Title : " + title); _log.info("New Sub Title : " + subTitle);
+		 * _log.info("New description : " + description);
+		 */
 		
 		News news = newsLocalService.getInstance();
 		news.setTitle(title);
@@ -131,8 +133,8 @@ public class OfficeManagementPortlet extends MVCPortlet {
 		news.setSubTitle(subTitle);
 		news.setDescription(description);
 		
-		newsLocalService.addNews(news);
-		_log.info("News Added successfully ::: ");		
+		news = newsLocalService.addNews(news);
+		//_log.info("News Added successfully ::: ");		
 		
 		ServiceContext serviceContext;
 		try {
@@ -144,6 +146,17 @@ public class OfficeManagementPortlet extends MVCPortlet {
 			Indexer<News> indexer = IndexerRegistryUtil.nullSafeGetIndexer(News.class);
 			indexer.reindex(news);
 			WorkflowHandlerRegistryUtil.startWorkflowInstance(themeDisplay.getCompanyId(), themeDisplay.getScopeGroupId(), themeDisplay.getUserId(), News.class.getName(), news.getPrimaryKey(), news, serviceContext);
+			
+			//_log.info("New status :: " + news.getStatus());
+			News newsList = NewsLocalServiceUtil.getNews(news.getId());
+			//_log.info("News List Status : " + newsList.getStatus());
+			String subject = "Liferay Workflow of " + news.getTitle() +".";
+			String body = "You have Workflow Task :" +news.getTitle()+". You need to approve or reject the task.";
+			if(newsList.getStatus() == 1) {
+				WorkflowEmailNotification.sendWFEmailNotification(OfficeManagementPortletKeys.CONTENT_EDITOR_EMAIL, subject, body, actionRequest);
+				//_log.info("Entered into the content editor email sending :: ");
+			}
+			
 		} catch (Exception e) {
 			
 			e.printStackTrace();
@@ -161,10 +174,11 @@ public class OfficeManagementPortlet extends MVCPortlet {
 		String subTitle = ParamUtil.getString(actionRequest, "subtitle");
 		String description = ParamUtil.getString(actionRequest, "description");
 		
-		_log.info("News Id : " + id);
-		_log.info("News title : " + title);
-		_log.info("News subTitle : " + subTitle);
-		_log.info("News description : " + description);
+		/*
+		 * _log.info("News Id : " + id); _log.info("News title : " + title);
+		 * _log.info("News subTitle : " + subTitle); _log.info("News description : " +
+		 * description);
+		 */
 		
 		if(id > 0) {
 			try {
@@ -174,17 +188,17 @@ public class OfficeManagementPortlet extends MVCPortlet {
 				news.setDescription(description);
 				
 				newsLocalService.updateNews(news);
-				_log.info("News updated successfully :::: ");
+				//_log.info("News updated successfully :::: ");
 				
 			} catch (PortalException e) {
-				_log.error("Unable to update news ");
+				//_log.error("Unable to update news ");
 				e.printStackTrace();
 			}
 		}
 	}
 	
 	public void updateNewsWF(ActionRequest actionRequest, ActionResponse actionResponse) throws IOException, PortletException {
-		System.out.println("update News WF");
+		//System.out.println("update News WF");
 		ThemeDisplay themeDisplay = (ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		long companyId = themeDisplay.getCompanyId();
 		long groupId = themeDisplay.getScopeGroupId();
@@ -202,6 +216,9 @@ public class OfficeManagementPortlet extends MVCPortlet {
 		if(Validator.isNotNull(wil)) {
 			WorkflowInstance workflowInstance;
 			try {
+				
+				
+				
 				workflowInstance =  WorkflowInstanceManagerUtil.getWorkflowInstance(companyId, wil.getWorkflowInstanceId());
 				Map<String, Serializable> workflowContext = (workflowInstance).getWorkflowContext();
 
@@ -220,24 +237,42 @@ public class OfficeManagementPortlet extends MVCPortlet {
 								e.printStackTrace();
 							}
 						}
-					} else {
+					} else if(transitionName.equalsIgnoreCase(OfficeManagementPortletKeys.CONTENT_PUBLISHER)){
+						//_log.info("Content Publisher block ::: ");
+						News news = NewsLocalServiceUtil.getNews(newsId);
+						//_log.info("News ID : " +news.getId());
+						
 						try {
 							WorkflowTaskManagerUtil.completeWorkflowTask(companyId, userId, workflowTaskId, transitionName, comment, workflowContext);
 						} catch (PortalException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+						
+						//_log.info("Workflow Status " + news.getStatus());
+						
+						String subject = "Liferay Workflow of " + news.getTitle() +".";
+						String body = "You have Workflow Task :" +news.getTitle()+". You need to approve or reject the task.";
+						
+						
+						WorkflowEmailNotification.sendWFEmailNotification(OfficeManagementPortletKeys.CONTENT_PUBLISHER_EMAIL, subject, body, actionRequest);
+						
+					}
+					else{
+					
+			
+						
+						try {
+							WorkflowTaskManagerUtil.completeWorkflowTask(companyId, userId, workflowTaskId, transitionName, comment, workflowContext);
+						} catch (PortalException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
 					}
 				}
 				
-				News news = NewsLocalServiceUtil.getNews(newsId);
-				String subject = "Liferay Workflow of " + news.getTitle() +".";
-				String body = "You have Workflow Task :" +news.getTitle()+". You need to approve or reject the task.";
-				if(news.getStatus() == 1) {
-					WorkflowEmailNotification.sendWFEmailNotification(themeDisplay.getUser().getEmailAddress(), subject, body, actionRequest);
-				}else if(news.getStatus() == 2) {
-					WorkflowEmailNotification.sendWFEmailNotification(themeDisplay.getUser().getEmailAddress(), subject, body, actionRequest);
-				}
+				
 				
 			} catch (WorkflowException e1) {
 				e1.printStackTrace();
@@ -246,6 +281,7 @@ public class OfficeManagementPortlet extends MVCPortlet {
 				e.printStackTrace();
 			}
 		}
+		
 		actionResponse.sendRedirect(redirect);
 	}
 }
